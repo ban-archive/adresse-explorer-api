@@ -1,8 +1,11 @@
 const express = require('express')
+const cors = require('cors')
 const {createClient} = require('./lib/ban/client')
 const wrap = require('./lib/utils/wrap')
 
 const app = express()
+
+app.use(cors())
 
 const client = createClient({
   clientId: process.env.BAN_CLIENT_ID,
