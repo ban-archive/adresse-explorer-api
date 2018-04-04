@@ -21,7 +21,7 @@ app.get('/communes/:codeCommune/voies', wrap(req => {
   return client.getVoies(req.params.codeCommune)
 }))
 
-app.get('/numeros/:id', wrap(req => {
+app.get('/voies/:id', wrap(req => {
   return client.getNumerosVoie(req.params.id)
 }))
 
