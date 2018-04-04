@@ -1,0 +1,25 @@
+{
+  "name": "ban-proxy",
+  "version": "0.0.0",
+  "description": "Proxy to BAN API",
+  "main": "index.js",
+  "author": "Jérôme Desboeufs <jerome.desboeufs@data.gouv.fr>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "express": "^4.16.3",
+    "got": "^8.3.0",
+    "lodash": "^4.17.5"
+  },
+  "devDependencies": {
+    "xo": "^0.20.3"
+  },
+  "xo": {
+    "semicolon": false,
+    "space": 2
+  },
+  "engines": {
+    "node": ">= 8"
+  }
+}
