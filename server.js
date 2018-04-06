@@ -1,7 +1,10 @@
+/* eslint unicorn/no-process-exit: off */
 const express = require('express')
 const cors = require('cors')
 const {createClient} = require('./lib/ban/client')
 const wrap = require('./lib/utils/wrap')
+const mongo = require('./lib/utils/mongo')
+const db = require('./lib/models')
 
 const app = express()
 
@@ -13,20 +16,37 @@ const client = createClient({
   baseUrl: process.env.BAN_API_URL || 'https://api-ban.ign.fr'
 })
 
-app.get('/communes/:codeCommune', wrap(req => {
+app.get('/ban/communes/:codeCommune', wrap(req => {
   return client.getCommune(req.params.codeCommune)
 }))
 
-app.get('/communes/:codeCommune/voies', wrap(req => {
+app.get('/ban/communes/:codeCommune/voies', wrap(req => {
   return client.getVoies(req.params.codeCommune)
 }))
 
-app.get('/voies/:id', wrap(req => {
+app.get('/ban/voies/:id', wrap(req => {
   return client.getNumerosVoie(req.params.id)
+}))
+
+app.get('/explore/:codeCommune', wrap(req => {
+  return db.getVoies(req.params.codeCommune)
+}))
+
+app.get('/explore/:codeCommune/:codeVoie', wrap(req => {
+  return db.getNumeros(req.params.codeCommune + '-' + req.params.codeVoie)
 }))
 
 const port = process.env.PORT || 5000
 
-app.listen(port, () => {
-  console.log('Start listening on port ' + port)
+async function main() {
+  await mongo.connect()
+
+  app.listen(port, () => {
+    console.log('Start listening on port ' + port)
+  })
+}
+
+main().catch(err => {
+  console.error(err)
+  process.exit(1)
 })
