@@ -6,7 +6,7 @@ const parse = require('csv-parser')
 const mongo = require('../lib/utils/mongo')
 
 function prepareData(addr, enc, next) {
-  const numero = addr.numero.toLowerCase()
+  const numero = addr.numero.toUpperCase()
   const codeCommune = addr.id.substr(0, 5)
   const codeVoie = addr.id.substr(5, 4)
   const idVoie = `${codeCommune}-${codeVoie}`

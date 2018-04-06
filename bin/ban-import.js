@@ -12,7 +12,7 @@ function prepareData(addr, enc, next) {
   }
   const codeCommune = addr.code_insee
   const codeVoie = addr.id_fantoir ? addr.id_fantoir.substr(5, 4) : deburr(addr.nom_voie).toLowerCase().replace(/\W/g, '-')
-  const numero = addr.number + addr.rep.toLowerCase()
+  const numero = addr.number + addr.rep.toUpperCase()
   const idVoie = `${codeCommune}-${codeVoie}`
   const id = `${idVoie}-${numero}`
 

@@ -11,7 +11,7 @@ function prepareData(addr, enc, next) {
     source: 'cadastre',
     id: properties.id,
     originalId: properties.id,
-    numero: properties.numero,
+    numero: properties.numero.toUpperCase(),
     nomVoie: properties.libelle_voie,
     codeVoie: properties.id.substr(6, 4),
     idVoie: properties.id.substr(0, 10),
