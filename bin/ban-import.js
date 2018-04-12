@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-/* eslint promise/prefer-await-to-then: off */
 const {createGunzip} = require('gunzip-stream')
-const {through, each, pipeline} = require('mississippi')
+const {through, pipeline} = require('mississippi')
 const {deburr} = require('lodash')
 const parse = require('csv-parser')
+const getStream = require('get-stream')
 const mongo = require('../lib/utils/mongo')
 
 function prepareData(addr, enc, next) {
@@ -48,21 +48,8 @@ async function main() {
     through.obj(prepareData)
   )
 
-  function eachLine(line, next) {
-    mongo.db.collection('adresses').insertOne(line)
-      .then(() => next())
-      .catch(next)
-  }
-
-  await new Promise((resolve, reject) => {
-    each(stream, eachLine, err => {
-      if (err) {
-        reject(err)
-      }
-      resolve()
-    })
-  })
-
+  const adresses = await getStream.array(stream)
+  await mongo.db.collection('adresses').insertMany(adresses)
   await mongo.disconnect()
 }
 
