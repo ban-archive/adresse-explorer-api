@@ -1,10 +1,9 @@
-#!/usr/bin/env node
 /* eslint camelcase: off */
+const {createReadStream} = require('fs')
 const {createGunzip} = require('gunzip-stream')
 const {through, pipeline} = require('mississippi')
 const getStream = require('get-stream')
 const {parse} = require('JSONStream')
-const mongo = require('../lib/utils/mongo')
 
 function prepareData(addr, enc, next) {
   const {properties, geometry} = addr
@@ -30,22 +29,13 @@ function prepareData(addr, enc, next) {
   next(null, adresse)
 }
 
-async function main() {
-  await mongo.connect()
-
-  const stream = pipeline.obj(
-    process.stdin,
+function load(path) {
+  return getStream.array(pipeline.obj(
+    createReadStream(path),
     createGunzip(),
     parse('features.*'),
     through.obj(prepareData)
-  )
-
-  const adresses = await getStream.array(stream)
-  await mongo.db.collection('adresses').insertMany(adresses)
-  await mongo.disconnect()
+  ))
 }
 
-main().catch(err => {
-  console.error(err)
-  process.exit(1)
-})
+module.exports = load

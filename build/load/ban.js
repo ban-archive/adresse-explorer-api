@@ -1,10 +1,9 @@
-#!/usr/bin/env node
+const {createReadStream} = require('fs')
 const {createGunzip} = require('gunzip-stream')
 const {through, pipeline} = require('mississippi')
 const {deburr} = require('lodash')
 const parse = require('csv-parser')
 const getStream = require('get-stream')
-const mongo = require('../lib/utils/mongo')
 
 function prepareData(addr, enc, next) {
   if (!addr.number || !addr.nom_voie) {
@@ -38,22 +37,13 @@ function prepareData(addr, enc, next) {
   next(null, adresse)
 }
 
-async function main() {
-  await mongo.connect()
-
-  const stream = pipeline.obj(
-    process.stdin,
+function load(path) {
+  return getStream.array(pipeline.obj(
+    createReadStream(path),
     createGunzip(),
     parse({separator: ','}),
     through.obj(prepareData)
-  )
-
-  const adresses = await getStream.array(stream)
-  await mongo.db.collection('adresses').insertMany(adresses)
-  await mongo.disconnect()
+  ))
 }
 
-main().catch(err => {
-  console.error(err)
-  process.exit(1)
-})
+module.exports = load
