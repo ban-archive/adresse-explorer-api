@@ -28,12 +28,17 @@ app.get('/ban/voies/:id', wrap(req => {
   return client.getNumerosVoie(req.params.id)
 }))
 
-app.get('/explore/:codeCommune', wrap(req => {
-  return db.getVoies(req.params.codeCommune)
+app.get('/explore/:codeCommune', wrap(async req => {
+  const voies = await db.getVoies(req.params.codeCommune)
+  return {voies}
 }))
 
 app.get('/explore/:codeCommune/:codeVoie', wrap(req => {
-  return db.getNumeros(req.params.codeCommune + '-' + req.params.codeVoie)
+  return db.getVoie(req.params.codeCommune + '-' + req.params.codeVoie)
+}))
+
+app.get('/explore/:codeCommune/:codeVoie/:numero', wrap(req => {
+  return db.getNumero(req.params.codeCommune + '-' + req.params.codeVoie + '-' + req.params.numero)
 }))
 
 const port = process.env.PORT || 5000
