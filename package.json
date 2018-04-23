@@ -20,6 +20,7 @@
     "cors": "^2.8.4",
     "csv-parser": "^1.12.1",
     "debug": "^3.1.0",
+    "decompress": "^4.2.0",
     "express": "^4.16.3",
     "get-stream": "^3.0.0",
     "got": "^8.3.0",
