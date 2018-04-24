@@ -13,7 +13,8 @@
     "addok:prepare": "./bin/prepare-addok.sh",
     "mongo:indexes": "node bin/mongo-indexes.js",
     "mongo:clean": "node bin/mongo-clean.js",
-    "start": "node server"
+    "start": "node server",
+    "lint": "xo bin lib *.js"
   },
   "dependencies": {
     "@etalab/cog": "^0.1.0",
