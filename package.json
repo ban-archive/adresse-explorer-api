@@ -27,6 +27,7 @@
     "gunzip-stream": "^1.0.1",
     "lodash": "^4.17.5",
     "mississippi": "^3.0.0",
+    "mkdirp": "^0.5.1",
     "mongodb": "^3.0.5",
     "ndjson": "^1.5.0"
   },
