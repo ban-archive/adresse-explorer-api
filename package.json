@@ -13,6 +13,7 @@
     "addok:prepare": "./bin/prepare-addok.sh",
     "mongo:indexes": "node bin/mongo-indexes.js",
     "mongo:clean": "node bin/mongo-clean.js",
+    "prepare-data": "node bin/prepare-data.js",
     "start": "node server",
     "lint": "xo bin lib *.js"
   },
