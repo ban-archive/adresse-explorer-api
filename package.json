@@ -10,6 +10,7 @@
     "import-adresses": "bin/import.js"
   },
   "scripts": {
+    "addok:prepare": "./bin/prepare-addok.sh",
     "mongo:indexes": "node bin/mongo-indexes.js",
     "mongo:clean": "node bin/mongo-clean.js",
     "start": "node server"

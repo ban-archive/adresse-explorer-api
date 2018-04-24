@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  addok:
+    image: etalab/addok
+    ports:
+    - "7878:7878"
+    volumes:
+    - ./addok-importer/addok.conf:/etc/addok/addok.conf
+    - ../data/addok-data/addok.db:/data/addok.db
+    links:
+    - addok-redis:redis
+  addok-redis:
+    image: etalab/addok-redis
+    volumes:
+    - ./data/addok-data/dump.rdb:/data/dump.rdb

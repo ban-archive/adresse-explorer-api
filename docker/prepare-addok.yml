@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  addok-importer:
+    build:
+      context: addok-importer
+    stdin_open: true
+    volumes:
+    - ../data/addok-data:/data
+    links:
+    - addok-importer-redis:redis
+  addok-importer-redis:
+    image: redis:3.2
+    volumes:
+    - ../data/addok-data:/data
