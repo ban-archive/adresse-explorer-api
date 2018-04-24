@@ -1,5 +1,5 @@
 {
-  "name": "adresse-explorer-api",
+  "name": "@etalab/adresse-explorer-api",
   "version": "0.0.0",
   "description": "Proxy to BAN API",
   "main": "index.js",
