@@ -31,7 +31,8 @@
     "mississippi": "^3.0.0",
     "mkdirp": "^0.5.1",
     "mongodb": "^3.0.5",
-    "ndjson": "^1.5.0"
+    "ndjson": "^1.5.0",
+    "worker-farm": "^1.6.0"
   },
   "devDependencies": {
     "xo": "^0.20.3"
