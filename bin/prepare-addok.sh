@@ -8,7 +8,7 @@ echo "> Suppression des anciennes données"
 rm -Rf data/addok-data
 
 echo "> Importation des données dans Redis"
-gzcat data/addok-source-files/*.ndjson.gz | docker-compose -f docker/prepare-addok.yml run addok-importer batch
+gunzip -c data/addok-source-files/*.ndjson.gz | docker-compose -f docker/prepare-addok.yml run addok-importer batch
 
 echo "> Création des ngrams"
 docker-compose -f docker/prepare-addok.yml run addok-importer ngrams
