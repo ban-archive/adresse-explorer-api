@@ -2,6 +2,7 @@
 
 echo "> Démontage de l'environnement docker (le cas échéant)"
 docker-compose -f docker/prepare-addok.yml stop
+docker-compose -f docker/prepare-addok.yml rm -f
 
 echo "> Suppression des anciennes données"
 rm -Rf data/addok-data
@@ -14,6 +15,7 @@ docker-compose -f docker/prepare-addok.yml run addok-importer ngrams
 
 echo "> Démontage de l'environnement docker"
 docker-compose -f docker/prepare-addok.yml stop
+docker-compose -f docker/prepare-addok.yml rm -f
 
 echo "> Listing des fichiers produits"
 ls -lh data/addok-data

@@ -13,4 +13,4 @@ services:
   addok-redis:
     image: etalab/addok-redis
     volumes:
-    - ./data/addok-data/dump.rdb:/data/dump.rdb
+    - ../data/addok-data/dump.rdb:/data/dump.rdb
