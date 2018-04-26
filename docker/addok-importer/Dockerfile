@@ -1,6 +1,6 @@
 FROM python:3.6
 
-RUN pip install cython addok==1.0.2 addok-fr==1.0.1 addok-france==1.1.0 addok-csv==1.0.1 addok-sqlite-store==1.0.0 gunicorn
+RUN pip install cython addok==1.0.2 addok-fr==1.0.1 addok-france==1.1.0 addok-sqlite-store==1.0.0
 
 COPY addok.conf /etc/addok/
 RUN echo "SQLITE_DB_PATH = '/data/addok.db'" >> /etc/addok/addok.conf
