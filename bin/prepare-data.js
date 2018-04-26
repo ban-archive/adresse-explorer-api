@@ -1,15 +1,44 @@
 #!/usr/bin/env node
-const {join} = require('path')
+const {resolve} = require('path')
 
+const {getCodesDepartements} = require('../lib/cog')
 const prepareData = require('../lib/prepare-data')
 
-const DATA_DIR = join(__dirname, '..', 'data')
-const BAN_PATH = join(DATA_DIR, 'BAN_licence_gratuite_repartage_54.zip')
-const BANO_PATH = join(DATA_DIR, 'bano-54.csv.gz')
-const CADASTRE_PATH = join(DATA_DIR, 'adresses-cadastre-54.ndjson.gz')
-const ADDOK_FILE_PATH = join(DATA_DIR, 'addok-source-files', '54.ndjson.gz')
+const codesDepartements = getCodesDepartements()
 
-prepareData({banPath: BAN_PATH, banoPath: BANO_PATH, cadastrePath: CADASTRE_PATH, importInMongo: false, addokFilePath: ADDOK_FILE_PATH})
+function getDepartements() {
+  if (!process.env.DEPARTEMENTS) {
+    return codesDepartements
+  }
+  const departements = process.env.DEPARTEMENTS.split(',')
+  if (departements.length === 0) {
+    throw new Error('La liste de départements fournie est mal formée')
+  }
+  if (departements.some(codeDep => !codesDepartements.includes(codeDep))) {
+    throw new Error('La liste de départements fournie est invalide')
+  }
+  return departements
+}
+
+const options = {departements: getDepartements()}
+
+if (process.env.BAN_SOURCE_PATTERN) {
+  options.banSourcePattern = resolve(process.env.BAN_SOURCE_PATTERN)
+}
+
+if (process.env.BANO_SOURCE_PATTERN) {
+  options.banoSourcePattern = resolve(process.env.BANO_SOURCE_PATTERN)
+}
+
+if (process.env.CADASTRE_SOURCE_PATTERN) {
+  options.cadastreSourcePattern = resolve(process.env.CADASTRE_SOURCE_PATTERN)
+}
+
+if (process.env.ADDOK_FILE_PATTERN) {
+  options.addokFilePattern = resolve(process.env.ADDOK_FILE_PATTERN)
+}
+
+prepareData(options)
   .catch(err => {
     console.error(err)
     process.exit(1)
