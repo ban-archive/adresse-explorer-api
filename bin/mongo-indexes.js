@@ -1,4 +1,5 @@
 #!/usr/env/bin node
+require('dotenv').config()
 const mongo = require('../lib/utils/mongo')
 
 async function main() {

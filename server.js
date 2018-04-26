@@ -1,4 +1,5 @@
 /* eslint unicorn/no-process-exit: off */
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const {createClient} = require('./lib/ban/client')

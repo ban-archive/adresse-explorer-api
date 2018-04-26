@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const {resolve} = require('path')
+require('dotenv').config()
 
 const {getCodesDepartements} = require('../lib/cog')
 const prepareData = require('../lib/prepare-data')
