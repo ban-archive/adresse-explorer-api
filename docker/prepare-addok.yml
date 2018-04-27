@@ -15,6 +15,6 @@ services:
     - ../data/addok-data:/data
   addok-importer-redis-save:
     image: redis:3.2
-    command: redis-cli -h redis -p 6379 save
+    command: redis-cli -h redis -p 6379 shutdown save
     links:
     - addok-importer-redis:redis

@@ -16,7 +16,7 @@ gunzip -c data/addok-source-files/*.ndjson.gz | docker-compose -f docker/prepare
 echo "> Création des ngrams"
 docker-compose -f docker/prepare-addok.yml run addok-importer ngrams
 
-echo "> Écriture du dump de la base Redis"
+echo "> Écriture du dump de la base Redis et arrêt de l'instance"
 docker-compose -f docker/prepare-addok.yml run addok-importer-redis-save
 
 echo "> Démontage de l'environnement docker"
