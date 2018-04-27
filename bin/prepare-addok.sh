@@ -5,7 +5,7 @@ docker-compose -f docker/prepare-addok.yml stop
 docker-compose -f docker/prepare-addok.yml rm -f
 
 echo "> Suppression des anciennes données"
-rm -Rf data/addok-data
+sudo rm -Rf data/addok-data
 
 echo "> Importation des données dans Redis"
 gunzip -c data/addok-source-files/*.ndjson.gz | docker-compose -f docker/prepare-addok.yml run addok-importer batch
