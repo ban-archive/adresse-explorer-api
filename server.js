@@ -9,6 +9,12 @@ const db = require('./lib/models')
 
 const app = express()
 
+function badRequest(message) {
+  const err = new Error(message)
+  err.badRequest = true
+  return err
+}
+
 app.use(cors())
 
 const client = createClient({
@@ -32,6 +38,17 @@ app.get('/ban/voies/:id', wrap(req => {
 app.get('/explore/:codeCommune', wrap(async req => {
   const voies = await db.getVoies(req.params.codeCommune)
   return {voies}
+}))
+
+app.get('/explore/:codeCommune/numeros', wrap(req => {
+  if (!req.query.bbox) {
+    throw badRequest('bbox is required')
+  }
+  const bbox = req.query.bbox.split(',').map(Number.parseFloat)
+  if (bbox.length !== 4 || bbox.some(Number.isNaN)) {
+    throw badRequest('bbox is malformed')
+  }
+  return db.getNumerosByBoundingBox(req.params.codeCommune, bbox)
 }))
 
 app.get('/explore/:codeCommune/:codeVoie', wrap(req => {
