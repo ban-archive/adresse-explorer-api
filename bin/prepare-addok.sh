@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "> Démontage de l'environnement docker (le cas échéant)"
+echo "> Réinitialisation de l'environnement docker"
 docker-compose -f docker/prepare-addok.yml stop
 docker-compose -f docker/prepare-addok.yml rm -f
 

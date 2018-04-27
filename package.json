@@ -13,6 +13,7 @@
     "prepare-data": "node bin/prepare-data.js",
     "start": "node server",
     "addok:start": "docker-compose -f docker/addok.yml up -d",
+    "addok:stop": "docker-compose -f docker/addok.yml down",
     "lint": "xo bin lib *.js"
   },
   "dependencies": {
