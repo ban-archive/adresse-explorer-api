@@ -35,6 +35,10 @@ if (process.env.CADASTRE_SOURCE_PATTERN) {
   options.cadastreSourcePattern = resolve(process.env.CADASTRE_SOURCE_PATTERN)
 }
 
+if (process.env.FTTH_SOURCE_PATTERN) {
+  options.ftthSourcePattern = resolve(process.env.FTTH_SOURCE_PATTERN)
+}
+
 if (process.env.ADDOK_FILE_PATTERN) {
   options.addokFilePattern = resolve(process.env.ADDOK_FILE_PATTERN)
 }
