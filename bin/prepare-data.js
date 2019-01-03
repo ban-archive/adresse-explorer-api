@@ -39,6 +39,10 @@ if (process.env.FTTH_SOURCE_PATTERN) {
   options.ftthSourcePattern = resolve(process.env.FTTH_SOURCE_PATTERN)
 }
 
+if (process.env.BAL_SOURCE_PATTERN) {
+  options.balSourcePattern = resolve(process.env.BAL_SOURCE_PATTERN)
+}
+
 if (process.env.ADDOK_FILE_PATTERN) {
   options.addokFilePattern = resolve(process.env.ADDOK_FILE_PATTERN)
 }
