@@ -21,7 +21,9 @@
     "lint": "xo bin lib *.js"
   },
   "dependencies": {
+    "@etalab/adresses-util": "^0.3.0",
     "@etalab/cog": "^0.1.0",
+    "@keyv/sqlite": "^2.0.0",
     "@turf/turf": "^5.1.6",
     "bluebird": "^3.5.3",
     "cors": "^2.8.5",
