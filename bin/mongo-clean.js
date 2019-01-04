@@ -5,8 +5,8 @@ const mongo = require('../lib/utils/mongo')
 const COLLECTIONS = ['numeros', 'voies']
 
 async function cleanCollection(collection) {
-  await collection.dropAllIndexes()
-  await collection.remove({})
+  await collection.dropIndexes()
+  await collection.removeMany({})
 }
 
 async function main() {
