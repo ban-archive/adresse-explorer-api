@@ -10,14 +10,11 @@
     "access": "public"
   },
   "scripts": {
-    "addok:prepare": "./bin/prepare-addok.sh",
     "mongo:indexes": "node bin/mongo-indexes.js",
     "mongo:clean": "node bin/mongo-clean.js",
     "prepare-data": "node bin/prepare-data.js",
     "build": "yarn addok:stop && yarn mongo:clean && yarn prepare-data && yarn mongo:indexes && yarn addok:prepare",
     "start": "node server",
-    "addok:start": "docker-compose -f docker/addok.yml up -d",
-    "addok:stop": "docker-compose -f docker/addok.yml down",
     "lint": "xo bin lib *.js"
   },
   "dependencies": {
