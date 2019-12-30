@@ -14,6 +14,15 @@ function badRequest(message) {
   return err
 }
 
+function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
+  const paddedNumero = numero ? numero.padStart(5, '0') : null
+
+  return [codeCommuneVoie, codeVoie, paddedNumero, suffixe]
+    .filter(Boolean)
+    .join('_')
+    .toLowerCase()
+}
+
 app.use(cors())
 
 app.get('/explore/:codeCommune', wrap(async req => {
@@ -34,12 +43,19 @@ app.get('/explore/:codeCommune/numeros', wrap(req => {
   return db.getNumerosByBoundingBox(req.params.codeCommune, bbox)
 }))
 
-app.get('/explore/:codeCommune/:codeVoie', wrap(req => {
-  return db.getVoie(req.params.codeCommune + '-' + req.params.codeVoie)
+app.get('/explore/:codeCommuneVoie/:codeVoie', wrap(req => {
+  const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie)
+  return db.getVoie(cleInterop)
 }))
 
-app.get('/explore/:codeCommune/:codeVoie/:numero', wrap(req => {
-  return db.getNumero(req.params.codeCommune + '-' + req.params.codeVoie + '-' + req.params.numero)
+app.get('/explore/:codeCommuneVoie/:codeVoie/:numero', wrap(req => {
+  const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, req.params.numero)
+  return db.getNumero(cleInterop)
+}))
+
+app.get('/explore/:codeCommuneVoie/:codeVoie/:numero/:suffixe', wrap(req => {
+  const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, req.params.numero, req.params.suffixe)
+  return db.getNumero(cleInterop)
 }))
 
 const port = process.env.PORT || 5000
