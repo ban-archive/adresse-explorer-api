@@ -20,7 +20,7 @@
     "express": "^4.17.1",
     "gunzip-stream": "^1.0.1",
     "lodash": "^4.17.15",
-    "mongodb": "^3.4.0",
+    "mongodb": "^3.4.1",
     "ndjson": "^1.5.0"
   },
   "devDependencies": {
