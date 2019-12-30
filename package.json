@@ -12,6 +12,7 @@
     "lint": "xo"
   },
   "dependencies": {
+    "@etalab/adresses-util": "^0.7.0",
     "@etalab/cog": "^0.1.0",
     "@turf/turf": "^5.1.6",
     "cors": "^2.8.5",

@@ -5,6 +5,7 @@ const {promisify} = require('util')
 const {pick} = require('lodash')
 const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
+const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
 
 const eos = promisify(finished)
@@ -31,9 +32,16 @@ const NUMERO_FIELDS = [
   'cleInterop'
 ]
 
+function prepareVoie(voie) {
+  voie.nomVoie = beautify(voie.nomVoie)
+}
+
 function handleAdressesVoie(context) {
   if (context.adressesVoie.length > 0) {
-    context.communeVoies.push(pick(context.adressesVoie[0], VOIE_FIELDS))
+    const voie = pick(context.adressesVoie[0], VOIE_FIELDS)
+    prepareVoie(voie)
+    context.communeVoies.push(voie)
+
     context.communeNumeros.push(...context.adressesVoie.map(a => pick(a, NUMERO_FIELDS)))
   }
 
