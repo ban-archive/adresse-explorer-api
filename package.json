@@ -1,21 +1,15 @@
 {
-  "name": "@etalab/adresse-explorer-api",
+  "name": "@etalab/api-adresse",
   "version": "0.0.0",
-  "description": "Proxy to BAN API",
-  "main": "index.js",
   "author": "Jérôme Desboeufs <jerome.desboeufs@data.gouv.fr>",
   "license": "MIT",
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "mongo:indexes": "node bin/mongo-indexes.js",
     "mongo:clean": "node bin/mongo-clean.js",
-    "prepare-data": "node bin/prepare-data.js",
-    "build": "yarn addok:stop && yarn mongo:clean && yarn prepare-data && yarn mongo:indexes && yarn addok:prepare",
+    "load-data": "node bin/load-data",
+    "prepare-db": "yarn mongo:clean && cat data/*.ndjson.gz | yarn load-data && yarn mongo:indexes",
     "start": "node server",
-    "lint": "xo bin lib *.js"
+    "lint": "xo"
   },
   "dependencies": {
     "@etalab/cog": "^0.1.0",
@@ -23,6 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "gunzip-stream": "^1.0.1",
     "lodash": "^4.17.15",
     "mongodb": "^3.4.0",
     "ndjson": "^1.5.0"
@@ -35,6 +30,6 @@
     "space": 2
   },
   "engines": {
-    "node": ">= 8"
+    "node": ">= 12"
   }
 }

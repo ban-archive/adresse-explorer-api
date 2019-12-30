@@ -1,4 +1,4 @@
-/* eslint unicorn/no-process-exit: off */
+#!/usr/bin/env node
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
