@@ -25,10 +25,12 @@ app.get('/explore/:codeCommune/numeros', wrap(req => {
   if (!req.query.bbox) {
     throw badRequest('bbox is required')
   }
+
   const bbox = req.query.bbox.split(',').map(Number.parseFloat)
   if (bbox.length !== 4 || bbox.some(Number.isNaN)) {
     throw badRequest('bbox is malformed')
   }
+
   return db.getNumerosByBoundingBox(req.params.codeCommune, bbox)
 }))
 
@@ -50,7 +52,7 @@ async function main() {
   })
 }
 
-main().catch(err => {
-  console.error(err)
+main().catch(error => {
+  console.error(error)
   process.exit(1)
 })

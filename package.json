@@ -24,11 +24,14 @@
     "ndjson": "^1.5.0"
   },
   "devDependencies": {
-    "xo": "^0.23.0"
+    "xo": "^0.25.3"
   },
   "xo": {
     "semicolon": false,
-    "space": 2
+    "space": 2,
+    "rules": {
+      "prefer-named-capture-group": "off"
+    }
   },
   "engines": {
     "node": ">= 12"
