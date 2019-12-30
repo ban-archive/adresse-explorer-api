@@ -25,12 +25,12 @@ function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
 
 app.use(cors())
 
-app.get('/explore/:codeCommune', wrap(async req => {
+app.get('/:codeCommune', wrap(async req => {
   const voies = await db.getVoies(req.params.codeCommune)
   return {voies}
 }))
 
-app.get('/explore/:codeCommune/numeros', wrap(req => {
+app.get('/:codeCommune/numeros', wrap(req => {
   if (!req.query.bbox) {
     throw badRequest('bbox is required')
   }
@@ -43,17 +43,17 @@ app.get('/explore/:codeCommune/numeros', wrap(req => {
   return db.getNumerosByBoundingBox(req.params.codeCommune, bbox)
 }))
 
-app.get('/explore/:codeCommuneVoie/:codeVoie', wrap(req => {
+app.get('/:codeCommuneVoie/:codeVoie', wrap(req => {
   const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie)
   return db.getVoie(cleInterop)
 }))
 
-app.get('/explore/:codeCommuneVoie/:codeVoie/:numero', wrap(req => {
+app.get('/:codeCommuneVoie/:codeVoie/:numero', wrap(req => {
   const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, req.params.numero)
   return db.getNumero(cleInterop)
 }))
 
-app.get('/explore/:codeCommuneVoie/:codeVoie/:numero/:suffixe', wrap(req => {
+app.get('/:codeCommuneVoie/:codeVoie/:numero/:suffixe', wrap(req => {
   const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, req.params.numero, req.params.suffixe)
   return db.getNumero(cleInterop)
 }))
