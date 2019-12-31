@@ -56,8 +56,8 @@ async function handleCommune(context) {
       codeCommune: currentCommune,
       adressesCount: communeNumeros.length,
       voiesCount: communeVoies.length,
-      nomsVoiesSources: countBy(communeVoies, 'nomVoieSource'),
-      positionsSources: countBy(communeNumeros, 'positionSource')
+      sourcesNomsVoies: countBy(communeVoies, 'sourceNomVoie'),
+      sourcesPositions: countBy(communeNumeros, 'sourcePosition')
     }
 
     if (commune && commune.population) {
