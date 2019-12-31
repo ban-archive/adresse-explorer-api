@@ -55,7 +55,8 @@ function prepareAdresseRow(row) {
     ...row,
     sourceNomVoie: getSource(row.sourceNomVoie),
     sourcePosition: getSource(row.sourcePosition),
-    sources: row.sources.map(s => getSource(s))
+    sources: row.sources.map(s => getSource(s)),
+    adressesOriginales: row.adressesOriginales.map(a => ({...a, source: getSource(a.source)}))
   }
 }
 
