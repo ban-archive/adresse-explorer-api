@@ -33,6 +33,32 @@ const NUMERO_FIELDS = [
   'cleInterop'
 ]
 
+const SOURCES_MAPPING = {
+  bal: 'commune',
+  'ign-api-gestion-municipal_administration': 'commune',
+  'ign-api-gestion-laposte': 'laposte',
+  'ign-api-gestion-sdis': 'sdis',
+  'ign-api-gestion-ign': 'ign',
+  cadastre: 'cadastre',
+  ftth: 'arcep',
+  'insee-ril': 'insee'
+}
+
+function getSource(rawSource) {
+  if (rawSource in SOURCES_MAPPING) {
+    return SOURCES_MAPPING[rawSource]
+  }
+}
+
+function prepareAdresseRow(row) {
+  return {
+    ...row,
+    sourceNomVoie: getSource(row.sourceNomVoie),
+    sourcePosition: getSource(row.sourcePosition),
+    sources: row.sources.map(s => getSource(s))
+  }
+}
+
 function handleAdressesVoie(context) {
   if (context.adressesVoie.length > 0) {
     const voie = pick(context.adressesVoie[0], VOIE_FIELDS)
@@ -103,7 +129,7 @@ async function main() {
             context.currentCommune = row.codeCommune
           }
 
-          context.adressesVoie.push(row)
+          context.adressesVoie.push(prepareAdresseRow(row))
 
           done()
         },
