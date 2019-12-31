@@ -2,7 +2,7 @@
 require('dotenv').config()
 const {Transform, finished} = require('stream')
 const {promisify} = require('util')
-const {pick, chain} = require('lodash')
+const {pick, chain, countBy} = require('lodash')
 const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
@@ -48,21 +48,25 @@ function handleAdressesVoie(context) {
 }
 
 async function handleCommune(context) {
-  if (context.currentCommune && context.communeVoies.length > 0 && context.communeNumeros.length > 0) {
-    const commune = getCommune(context.currentCommune)
+  const {currentCommune, communeVoies, communeNumeros, mongo} = context
+
+  if (currentCommune && communeVoies.length > 0 && communeNumeros.length > 0) {
+    const commune = getCommune(currentCommune)
     const communeMetrics = {
-      codeCommune: context.currentCommune,
-      adressesCount: context.communeNumeros.length,
-      voiesCount: context.communeVoies.length
+      codeCommune: currentCommune,
+      adressesCount: communeNumeros.length,
+      voiesCount: communeVoies.length,
+      nomsVoiesSources: countBy(communeVoies, 'nomVoieSource'),
+      positionsSources: countBy(communeNumeros, 'positionSource')
     }
 
     if (commune && commune.population) {
       commune.adressesRatio = Math.round(commune.adressesCount / commune.population * 1000)
     }
 
-    await context.mongo.db.collection('communes').insertOne(communeMetrics)
-    await context.mongo.db.collection('voies').insertMany(context.communeVoies)
-    await context.mongo.db.collection('numeros').insertMany(context.communeNumeros)
+    await mongo.db.collection('communes').insertOne(communeMetrics)
+    await mongo.db.collection('voies').insertMany(communeVoies)
+    await mongo.db.collection('numeros').insertMany(communeNumeros)
   }
 
   context.communeVoies = []
