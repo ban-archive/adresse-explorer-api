@@ -2,7 +2,7 @@
 require('dotenv').config()
 const mongo = require('../lib/utils/mongo')
 
-const COLLECTIONS = ['numeros', 'voies']
+const COLLECTIONS = ['numeros', 'voies', 'communes']
 
 async function cleanCollection(collection) {
   await collection.dropIndexes()
