@@ -57,7 +57,8 @@ async function handleCommune(context) {
       adressesCount: communeNumeros.length,
       voiesCount: communeVoies.length,
       sourcesNomsVoies: countBy(communeVoies, 'sourceNomVoie'),
-      sourcesPositions: countBy(communeNumeros, 'sourcePosition')
+      sourcesPositions: countBy(communeNumeros, 'sourcePosition'),
+      sources: chain(communeVoies).map('sources').flatten().uniq().value()
     }
 
     if (commune && commune.population) {
