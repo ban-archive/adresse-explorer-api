@@ -2,7 +2,7 @@
 require('dotenv').config()
 const {Transform, finished} = require('stream')
 const {promisify} = require('util')
-const {pick} = require('lodash')
+const {pick, chain} = require('lodash')
 const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
@@ -32,14 +32,12 @@ const NUMERO_FIELDS = [
   'cleInterop'
 ]
 
-function prepareVoie(voie) {
-  voie.nomVoie = beautify(voie.nomVoie)
-}
-
 function handleAdressesVoie(context) {
   if (context.adressesVoie.length > 0) {
     const voie = pick(context.adressesVoie[0], VOIE_FIELDS)
-    prepareVoie(voie)
+    voie.nomVoie = beautify(voie.nomVoie)
+    voie.numerosCount = context.adressesVoie.length
+    voie.sources = chain(context.adressesVoie).map('sources').flatten().uniq().value()
     context.communeVoies.push(voie)
 
     context.communeNumeros.push(...context.adressesVoie.map(a => pick(a, NUMERO_FIELDS)))
