@@ -48,13 +48,9 @@ app.get('/:codeCommuneVoie/:codeVoie', wrap(req => {
   return db.getVoie(cleInterop)
 }))
 
-app.get('/:codeCommuneVoie/:codeVoie/:numero', wrap(req => {
-  const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, req.params.numero)
-  return db.getNumero(cleInterop)
-}))
-
-app.get('/:codeCommuneVoie/:codeVoie/:numero/:suffixe', wrap(req => {
-  const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, req.params.numero, req.params.suffixe)
+app.get('/:codeCommuneVoie/:codeVoie/:numeroComplet', wrap(req => {
+  const [, numero, suffixe] = req.params.numeroComplet.match(/^(\d+)(\w*)$/)
+  const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, numero, suffixe)
   return db.getNumero(cleInterop)
 }))
 
