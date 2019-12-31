@@ -7,6 +7,7 @@ const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
+const {getCommune} = require('../lib/cog')
 
 const eos = promisify(finished)
 
@@ -48,6 +49,18 @@ function handleAdressesVoie(context) {
 
 async function handleCommune(context) {
   if (context.currentCommune && context.communeVoies.length > 0 && context.communeNumeros.length > 0) {
+    const commune = getCommune(context.currentCommune)
+    const communeMetrics = {
+      codeCommune: context.currentCommune,
+      adressesCount: context.communeNumeros.length,
+      voiesCount: context.communeVoies.length
+    }
+
+    if (commune && commune.population) {
+      commune.adressesRatio = Math.round(commune.adressesCount / commune.population * 1000)
+    }
+
+    await context.mongo.db.collection('communes').insertOne(communeMetrics)
     await context.mongo.db.collection('voies').insertMany(context.communeVoies)
     await context.mongo.db.collection('numeros').insertMany(context.communeNumeros)
   }
