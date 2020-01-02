@@ -89,7 +89,7 @@ async function handleCommune(context) {
     }
 
     if (commune && commune.population) {
-      commune.adressesRatio = Math.round(commune.adressesCount / commune.population * 1000)
+      communeMetrics.adressesRatio = Math.round(commune.adressesCount / commune.population * 1000)
     }
 
     await mongo.db.collection('communes').insertOne(communeMetrics)
