@@ -7,7 +7,7 @@ const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
-const {getCommune, getDepartementByCommune} = require('../lib/cog')
+const {getCommune} = require('../lib/cog')
 
 const eos = promisify(finished)
 
@@ -87,7 +87,7 @@ async function handleCommune(context) {
 
     const communeMetrics = {
       codeCommune: currentCommune,
-      codeDepartement: getDepartementByCommune(currentCommune),
+      codeDepartement: commune.departement,
       adressesCount: communeNumeros.length,
       voiesCount: communeVoies.length,
       sourcesNomsVoies: countBy(communeVoies, 'sourceNomVoie'),
