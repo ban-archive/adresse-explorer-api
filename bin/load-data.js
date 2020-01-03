@@ -34,8 +34,8 @@ const NUMERO_FIELDS = [
 ]
 
 const SOURCES_MAPPING = {
-  bal: 'commune',
-  'ign-api-gestion-municipal_administration': 'commune',
+  bal: 'commune-bal',
+  'ign-api-gestion-municipal_administration': 'commune-guichet',
   'ign-api-gestion-laposte': 'laposte',
   'ign-api-gestion-sdis': 'sdis',
   'ign-api-gestion-ign': 'ign',
