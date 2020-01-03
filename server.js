@@ -38,8 +38,15 @@ app.get('/france', wrap(async () => {
   return metrics
 }))
 
-app.get('/departement/:codeDepartement', wrap(req => {
-  return db.getDepartementMetrics(req.params.codeDepartement)
+app.get('/departement/:codeDepartement', wrap(async req => {
+  const metrics = await db.getDepartementMetrics(req.params.codeDepartement)
+  const contoursIndex = await contoursIndexPromise
+  metrics.communes.forEach(c => {
+    if (c.codeCommune in contoursIndex) {
+      c.contour = contoursIndex[c.codeCommune]
+    }
+  })
+  return metrics
 }))
 
 app.get('/:codeCommune', wrap(async req => {
