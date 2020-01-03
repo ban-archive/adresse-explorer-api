@@ -66,6 +66,12 @@ function handleAdressesVoie(context) {
     voie.nomVoie = beautify(voie.nomVoie)
     voie.numerosCount = context.adressesVoie.length
     voie.sources = chain(context.adressesVoie).map('sources').flatten().uniq().value()
+
+    voie.nomsVoie = chain(context.adressesVoie)
+      .groupBy(a => `${a.source}@${a.nomVoie}`)
+      .map(g => ({source: g[0].source, nomVoie: g[0].nomVoie, count: g.length}))
+      .value()
+
     context.communeVoies.push(voie)
 
     context.communeNumeros.push(...context.adressesVoie.map(a => pick(a, NUMERO_FIELDS)))
