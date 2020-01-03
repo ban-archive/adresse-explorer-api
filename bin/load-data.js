@@ -79,6 +79,8 @@ async function handleCommune(context) {
 
   if (currentCommune && communeVoies.length > 0 && communeNumeros.length > 0) {
     const commune = getCommune(currentCommune)
+    const sources = chain(communeVoies).map('sources').flatten().uniq().value()
+
     const communeMetrics = {
       codeCommune: currentCommune,
       codeDepartement: getDepartementByCommune(currentCommune),
@@ -86,7 +88,8 @@ async function handleCommune(context) {
       voiesCount: communeVoies.length,
       sourcesNomsVoies: countBy(communeVoies, 'sourceNomVoie'),
       sourcesPositions: countBy(communeNumeros, 'sourcePosition'),
-      sources: chain(communeVoies).map('sources').flatten().uniq().value()
+      sources,
+      type: sources.includes('commune-bal') ? 'bal' : 'merge'
     }
 
     if (commune && commune.population) {
