@@ -7,7 +7,7 @@ const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
-const {getCommune} = require('../lib/cog')
+const {getCommune, getCommunes} = require('../lib/cog')
 
 const eos = promisify(finished)
 
@@ -112,6 +112,27 @@ async function handleCommune(context) {
   context.communeNumeros = []
 }
 
+async function finish(context) {
+  const {handledCommunes} = context
+
+  // On commence par traiter toutes les communes qui n'ont pas d'adresses
+  const communesMetrics = getCommunes().filter(c => !handledCommunes.has(c.code)).map(commune => {
+    return {
+      codeCommune: commune.code,
+      codeDepartement: commune.departement,
+      population: commune.population,
+      adressesCount: 0,
+      voiesCount: 0,
+      sourcesNomsVoies: {},
+      sourcesPositions: {},
+      sources: [],
+      type: 'empty'
+    }
+  })
+
+  await mongo.db.collection('communes').insertMany(communesMetrics)
+}
+
 async function main() {
   await mongo.connect()
 
@@ -148,6 +169,7 @@ async function main() {
         async flush(done) {
           handleAdressesVoie(context)
           await handleCommune(context)
+          await finish(context)
           done()
         }
       })).resume()
