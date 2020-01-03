@@ -170,9 +170,11 @@ async function finish(context) {
         return false
       })
 
+      const departement = getDepartement(codeDepartement)
+
       return {
         codeDepartement,
-        nomDepartement: getDepartement(codeDepartement),
+        nomDepartement: departement ? departement.nom : undefined,
         communesCount: communesMetrics.length,
         communesWithWarnings: communesWithWarnings.length
       }
