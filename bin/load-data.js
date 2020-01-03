@@ -68,6 +68,8 @@ function handleAdressesVoie(context) {
     voie.sources = chain(context.adressesVoie).map('sources').flatten().uniq().value()
 
     voie.nomsVoie = chain(context.adressesVoie)
+      .map(a => a.adressesOriginales)
+      .flatten()
       .groupBy(a => `${a.source}@${a.nomVoie}`)
       .map(g => ({source: g[0].source, nomVoie: g[0].nomVoie, count: g.length}))
       .value()
