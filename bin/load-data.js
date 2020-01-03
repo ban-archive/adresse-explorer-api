@@ -104,7 +104,7 @@ async function handleCommune(context) {
 
     if (commune.population) {
       communeMetrics.population = commune.population
-      communeMetrics.adressesRatio = Math.round(commune.adressesCount / commune.population * 1000)
+      communeMetrics.adressesRatio = Math.round(communeMetrics.adressesCount / commune.population * 1000)
     }
 
     context.communesMetrics.push(communeMetrics)
