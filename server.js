@@ -5,8 +5,10 @@ const cors = require('cors')
 const wrap = require('./lib/utils/wrap')
 const mongo = require('./lib/utils/mongo')
 const db = require('./lib/models')
+const {buildContoursIndex} = require('./lib/contours')
 
 const app = express()
+const contoursIndexPromise = buildContoursIndex()
 
 function badRequest(message) {
   const err = new Error(message)
@@ -25,8 +27,15 @@ function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
 
 app.use(cors())
 
-app.get('/france', wrap(() => {
-  return db.getFranceMetrics()
+app.get('/france', wrap(async () => {
+  const metrics = await db.getFranceMetrics()
+  const contoursIndex = await contoursIndexPromise
+  metrics.departements.forEach(d => {
+    if (d.codeDepartement in contoursIndex) {
+      d.contour = contoursIndex[d.codeDepartement]
+    }
+  })
+  return metrics
 }))
 
 app.get('/departement/:codeDepartement', wrap(req => {
