@@ -75,7 +75,7 @@ function handleAdressesVoie(context) {
 }
 
 async function handleCommune(context) {
-  const {currentCommune, communeVoies, communeNumeros, mongo} = context
+  const {currentCommune, communeVoies, communeNumeros, mongo, handledCommunes} = context
 
   if (currentCommune && communeVoies.length > 0 && communeNumeros.length > 0) {
     const commune = getCommune(currentCommune)
@@ -97,6 +97,8 @@ async function handleCommune(context) {
     await mongo.db.collection('communes').insertOne(communeMetrics)
     await mongo.db.collection('voies').insertMany(communeVoies)
     await mongo.db.collection('numeros').insertMany(communeNumeros)
+
+    handledCommunes.add(currentCommune)
   }
 
   context.communeVoies = []
@@ -112,7 +114,8 @@ async function main() {
     currentCommune: undefined,
     adressesVoie: [],
     communeVoies: [],
-    communeNumeros: []
+    communeNumeros: [],
+    handledCommunes: new Set()
   }
 
   await eos(
