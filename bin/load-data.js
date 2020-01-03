@@ -7,7 +7,7 @@ const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
-const {getCommune, getCommunes, getDepartement} = require('../lib/cog')
+const {getCommune, getCommunes, getDepartement, getCodeDepartementByCodeCommune} = require('../lib/cog')
 
 const eos = promisify(finished)
 
@@ -144,7 +144,7 @@ async function finish(context) {
 
   // On calcule désormais les métriques relatives aux départements
   const departementsMetrics = chain(context.communesMetrics)
-    .groupBy(c => c.codeCommune.startsWith('97') ? c.codeCommune.slice(0, 3) : c.codeCommune.slice(0, 2))
+    .groupBy(c => getCodeDepartementByCodeCommune(c.codeCommune))
     .map((communesMetrics, codeDepartement) => {
       const communesWithWarnings = communesMetrics.filter(c => {
         if (c.type === 'bal') {
