@@ -7,7 +7,7 @@ const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
-const {getCommune, getCommunes} = require('../lib/cog')
+const {getCommune, getCommunes, getDepartement} = require('../lib/cog')
 
 const eos = promisify(finished)
 
@@ -107,6 +107,8 @@ async function handleCommune(context) {
       communeMetrics.adressesRatio = Math.round(commune.adressesCount / commune.population * 1000)
     }
 
+    context.communesMetrics.push(communeMetrics)
+
     await mongo.db.collection('communes').insertOne(communeMetrics)
     await mongo.db.collection('voies').insertMany(communeVoies)
     await mongo.db.collection('numeros').insertMany(communeNumeros)
@@ -136,7 +138,46 @@ async function finish(context) {
     }
   })
 
+  context.communesMetrics.push(...communesMetrics)
+
   await mongo.db.collection('communes').insertMany(communesMetrics)
+
+  // On calcule désormais les métriques relatives aux départements
+  const departementsMetrics = chain(context.communesMetrics)
+    .groupBy(c => c.codeCommune.startsWith('97') ? c.codeCommune.slice(0, 3) : c.codeCommune.slice(0, 2))
+    .map((communesMetrics, codeDepartement) => {
+      const communesWithWarnings = communesMetrics.filter(c => {
+        if (c.type === 'bal') {
+          return false
+        }
+
+        if (c.type === 'empty' && !c.population) {
+          return false
+        }
+
+        if (c.type === 'empty') {
+          return true
+        }
+
+        // Maintenant on s'occupe des communes en mode "merge"
+        // Mode gros doigts pour l'instant
+        if (c.adressesRatio > 500 || c.adressesRatio < 150) {
+          return true
+        }
+
+        return false
+      })
+
+      return {
+        codeDepartement,
+        nomDepartement: getDepartement(codeDepartement),
+        communesCount: communesMetrics.length,
+        communesWithWarnings: communesWithWarnings.length
+      }
+    })
+    .value()
+
+  await mongo.db.collection('departements').insertMany(departementsMetrics)
 }
 
 async function main() {
@@ -148,7 +189,8 @@ async function main() {
     adressesVoie: [],
     communeVoies: [],
     communeNumeros: [],
-    handledCommunes: new Set()
+    handledCommunes: new Set(),
+    communesMetrics: []
   }
 
   await eos(
