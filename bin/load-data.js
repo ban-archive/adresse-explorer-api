@@ -81,6 +81,10 @@ async function handleCommune(context) {
     const commune = getCommune(currentCommune)
     const sources = chain(communeVoies).map('sources').flatten().uniq().value()
 
+    if (!commune) {
+      throw new Error(`Commune ${currentCommune} introuvable`)
+    }
+
     const communeMetrics = {
       codeCommune: currentCommune,
       codeDepartement: getDepartementByCommune(currentCommune),
@@ -92,7 +96,7 @@ async function handleCommune(context) {
       type: sources.includes('commune-bal') ? 'bal' : 'merge'
     }
 
-    if (commune && commune.population) {
+    if (commune.population) {
       communeMetrics.population = commune.population
       communeMetrics.adressesRatio = Math.round(commune.adressesCount / commune.population * 1000)
     }
