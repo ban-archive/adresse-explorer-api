@@ -75,7 +75,7 @@ function handleAdressesVoie(context) {
 }
 
 async function handleCommune(context) {
-  const {currentCommune, communeVoies, communeNumeros, mongo, handledCommunes} = context
+  const {currentCommune, communeVoies, communeNumeros, handledCommunes} = context
 
   if (currentCommune && communeVoies.length > 0 && communeNumeros.length > 0) {
     const commune = getCommune(currentCommune)
@@ -112,7 +112,6 @@ async function main() {
   await mongo.connect()
 
   const context = {
-    mongo,
     currentVoie: undefined,
     currentCommune: undefined,
     adressesVoie: [],
