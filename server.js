@@ -25,6 +25,14 @@ function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
 
 app.use(cors())
 
+app.get('/france', wrap(() => {
+  return db.getFranceMetrics()
+}))
+
+app.get('/departement/:codeDepartement', wrap(req => {
+  return db.getDepartementMetrics(req.params.codeDepartement)
+}))
+
 app.get('/:codeCommune', wrap(async req => {
   const {codeCommune} = req.params
   const voies = await db.getVoies(codeCommune)
