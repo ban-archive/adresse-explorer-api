@@ -2,7 +2,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
-const wrap = require('./lib/utils/wrap')
+const w = require('./lib/utils/wrap')
 const mongo = require('./lib/utils/mongo')
 const db = require('./lib/models')
 const {getCommune} = require('./lib/cog')
@@ -11,24 +11,11 @@ const {buildContoursIndex} = require('./lib/contours')
 const app = express()
 const contoursIndexPromise = buildContoursIndex()
 
-function badRequest(message) {
-  const err = new Error(message)
-  err.badRequest = true
-  return err
-}
-
-function w(handler) {
-  return (req, res) => {
-    try {
-      handler(req, res)
-    } catch (error) {
-      console.error(error)
-      res.status(500).send({
-        code: 500,
-        message: error.message
-      })
-    }
-  }
+function badRequest(res, message) {
+  return res.status(400).send({
+    code: 400,
+    message
+  })
 }
 
 function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
@@ -42,7 +29,7 @@ function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
 
 app.use(cors())
 
-app.get('/france', wrap(async () => {
+app.get('/france', w(async (req, res) => {
   const metrics = await db.getFranceMetrics()
   const contoursIndex = await contoursIndexPromise
   metrics.departements.forEach(d => {
@@ -50,11 +37,16 @@ app.get('/france', wrap(async () => {
       d.contour = contoursIndex[d.codeDepartement]
     }
   })
-  return metrics
+  res.send(metrics)
 }))
 
-app.get('/departement/:codeDepartement', wrap(async req => {
+app.get('/departement/:codeDepartement', w(async (req, res) => {
   const metrics = await db.getDepartementMetrics(req.params.codeDepartement)
+
+  if (!metrics) {
+    return res.sendStatus(404)
+  }
+
   const contoursIndex = await contoursIndexPromise
   metrics.communes.forEach(c => {
     c.nomCommune = getCommune(c.codeCommune).nom
@@ -62,27 +54,35 @@ app.get('/departement/:codeDepartement', wrap(async req => {
       c.contour = contoursIndex[c.codeCommune]
     }
   })
-  return metrics
+
+  res.send(metrics)
 }))
 
-app.get('/:codeCommune', wrap(async req => {
+app.get('/:codeCommune', w(async (req, res) => {
   const {codeCommune} = req.params
   const voies = await db.getVoies(codeCommune)
-  const communeMetrics = (await db.getCommuneMetrics(codeCommune)) || {}
+  const communeMetrics = await db.getCommuneMetrics(codeCommune)
+
+  if (!communeMetrics) {
+    return res.sendStatus(404)
+  }
+
   return {...communeMetrics, voies}
 }))
 
-app.get('/:codeCommune/numeros', wrap(req => {
+app.get('/:codeCommune/numeros', w(async (req, res) => {
   if (!req.query.bbox) {
-    throw badRequest('bbox is required')
+    return badRequest(res, 'bbox is required')
   }
 
   const bbox = req.query.bbox.split(',').map(Number.parseFloat)
   if (bbox.length !== 4 || bbox.some(Number.isNaN)) {
-    throw badRequest('bbox is malformed')
+    return badRequest(res, 'bbox is malformed')
   }
 
-  return db.getNumerosByBoundingBox(req.params.codeCommune, bbox)
+  const numeros = await db.getNumerosByBoundingBox(req.params.codeCommune, bbox)
+
+  res.send(numeros)
 }))
 
 app.get('/:codeCommuneVoie/:codeVoie', w(async (req, res) => {
@@ -96,10 +96,16 @@ app.get('/:codeCommuneVoie/:codeVoie', w(async (req, res) => {
   res.send(voie)
 }))
 
-app.get('/:codeCommuneVoie/:codeVoie/:numeroComplet', wrap(req => {
+app.get('/:codeCommuneVoie/:codeVoie/:numeroComplet', w(async (req, res) => {
   const [, numero, suffixe] = req.params.numeroComplet.match(/^(\d+)(\w*)$/)
   const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie, numero, suffixe)
-  return db.getNumero(cleInterop)
+  const adresse = await db.getNumero(cleInterop)
+
+  if (!adresse) {
+    return res.sendStatus(404)
+  }
+
+  res.send(adresse)
 }))
 
 const port = process.env.PORT || 5000
