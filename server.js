@@ -17,6 +17,20 @@ function badRequest(message) {
   return err
 }
 
+function w(handler) {
+  return (req, res) => {
+    try {
+      handler(req, res)
+    } catch (error) {
+      console.error(error)
+      res.status(500).send({
+        code: 500,
+        message: error.message
+      })
+    }
+  }
+}
+
 function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
   const paddedNumero = numero ? numero.padStart(5, '0') : null
 
@@ -71,9 +85,15 @@ app.get('/:codeCommune/numeros', wrap(req => {
   return db.getNumerosByBoundingBox(req.params.codeCommune, bbox)
 }))
 
-app.get('/:codeCommuneVoie/:codeVoie', wrap(req => {
+app.get('/:codeCommuneVoie/:codeVoie', w(async (req, res) => {
   const cleInterop = toCleInterop(req.params.codeCommuneVoie, req.params.codeVoie)
-  return db.getVoie(cleInterop)
+  const voie = await db.getVoie(cleInterop)
+
+  if (!voie) {
+    return res.sendStatus(404)
+  }
+
+  res.send(voie)
 }))
 
 app.get('/:codeCommuneVoie/:codeVoie/:numeroComplet', wrap(req => {
