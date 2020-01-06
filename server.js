@@ -5,6 +5,7 @@ const cors = require('cors')
 const wrap = require('./lib/utils/wrap')
 const mongo = require('./lib/utils/mongo')
 const db = require('./lib/models')
+const {getCommune} = require('./lib/cog')
 const {buildContoursIndex} = require('./lib/contours')
 
 const app = express()
@@ -42,6 +43,7 @@ app.get('/departement/:codeDepartement', wrap(async req => {
   const metrics = await db.getDepartementMetrics(req.params.codeDepartement)
   const contoursIndex = await contoursIndexPromise
   metrics.communes.forEach(c => {
+    c.nomCommune = getCommune(c.codeCommune).nom
     if (c.codeCommune in contoursIndex) {
       c.contour = contoursIndex[c.codeCommune]
     }
