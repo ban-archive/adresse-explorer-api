@@ -27,7 +27,7 @@ function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
     .toLowerCase()
 }
 
-app.use(cors())
+app.use(cors({origin: true}))
 
 app.get('/france', w(async (req, res) => {
   const metrics = await db.getFranceMetrics()
