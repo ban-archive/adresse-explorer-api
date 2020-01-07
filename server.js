@@ -60,7 +60,7 @@ app.get('/departement/:codeDepartement', w(async (req, res) => {
 
 app.get('/:codeCommune', w(async (req, res) => {
   const {codeCommune} = req.params
-  const communeMetrics = db.getCommuneMetrics(codeCommune)
+  const communeMetrics = await db.getCommuneMetrics(codeCommune)
 
   if (!communeMetrics) {
     return res.sendStatus(404)
