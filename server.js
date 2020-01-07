@@ -67,7 +67,7 @@ app.get('/:codeCommune', w(async (req, res) => {
     return res.sendStatus(404)
   }
 
-  return {...communeMetrics, voies}
+  res.send({...communeMetrics, voies})
 }))
 
 app.get('/:codeCommune/numeros', w(async (req, res) => {
