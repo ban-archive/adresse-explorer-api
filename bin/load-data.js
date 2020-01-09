@@ -162,7 +162,7 @@ async function finish(context) {
           return false
         }
 
-        if (adressesCount < adressesCountTarget * 0.8 || adressesCount > adressesCountTarget * 1.2) {
+        if (adressesCount < adressesCountTarget * 0.7 || adressesCount > adressesCountTarget * 1.3) {
           return true
         }
 
