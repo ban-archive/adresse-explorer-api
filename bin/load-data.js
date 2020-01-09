@@ -2,12 +2,15 @@
 require('dotenv').config()
 const {Transform, finished} = require('stream')
 const {promisify} = require('util')
-const {pick, chain, countBy} = require('lodash')
+const {pick, chain, countBy, keyBy} = require('lodash')
 const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
 const {getCommune, getCommunes, getDepartement, getCodeDepartementByCodeCommune} = require('../lib/cog')
+const communesLocaux = require('../communes-locaux.json')
+
+const communesLocauxIndex = keyBy(communesLocaux, 'codeCommune')
 
 const eos = promisify(finished)
 
@@ -87,6 +90,7 @@ async function handleCommune(context) {
 
   if (currentCommune && communeVoies.length > 0 && communeNumeros.length > 0) {
     const commune = getCommune(currentCommune)
+    const communeLocaux = communesLocauxIndex[currentCommune]
     const sources = chain(communeVoies).map('sources').flatten().uniq().value()
 
     if (!commune) {
@@ -96,17 +100,14 @@ async function handleCommune(context) {
     const communeMetrics = {
       codeCommune: currentCommune,
       codeDepartement: commune.departement,
+      population: commune.population,
       adressesCount: communeNumeros.length,
+      adressesCountTarget: communeLocaux ? communeLocaux.nbAdressesUniques : undefined,
       voiesCount: communeVoies.length,
       sourcesNomsVoies: countBy(communeVoies, 'sourceNomVoie'),
       sourcesPositions: countBy(communeNumeros, 'sourcePosition'),
       sources,
       type: sources.includes('commune-bal') ? 'bal' : 'merge'
-    }
-
-    if (commune.population) {
-      communeMetrics.population = commune.population
-      communeMetrics.adressesRatio = Math.round(communeMetrics.adressesCount / commune.population * 1000)
     }
 
     context.communesMetrics.push(communeMetrics)
@@ -127,11 +128,13 @@ async function finish(context) {
 
   // On commence par traiter toutes les communes qui n'ont pas d'adresses
   const communesMetrics = getCommunes().filter(c => !handledCommunes.has(c.code)).map(commune => {
+    const communeLocaux = communesLocauxIndex[commune.code]
     return {
       codeCommune: commune.code,
       codeDepartement: commune.departement,
       population: commune.population,
       adressesCount: 0,
+      adressesCountTarget: communeLocaux ? communeLocaux.nbAdressesUniques : undefined,
       voiesCount: 0,
       sourcesNomsVoies: {},
       sourcesPositions: {},
@@ -149,21 +152,17 @@ async function finish(context) {
     .groupBy(c => getCodeDepartementByCodeCommune(c.codeCommune))
     .map((communesMetrics, codeDepartement) => {
       const communesWithWarnings = communesMetrics.filter(c => {
-        if (c.type === 'bal') {
-          return false
-        }
-
-        if (c.type === 'empty' && !c.population) {
-          return false
-        }
-
         if (c.type === 'empty') {
           return true
         }
 
-        // Maintenant on s'occupe des communes en mode "merge"
-        // Mode gros doigts pour l'instant
-        if (c.adressesRatio > 500 || c.adressesRatio < 150) {
+        const {adressesCount, adressesCountTarget} = c
+
+        if (!adressesCountTarget) {
+          return false
+        }
+
+        if (adressesCount < adressesCountTarget * 0.8 || adressesCount > adressesCountTarget * 1.2) {
           return true
         }
 
