@@ -203,6 +203,10 @@ async function main() {
       .pipe(new Transform({
         objectMode: true,
         async transform(row, enc, done) {
+          if (row.type === 'lieu-dit') {
+            return done()
+          }
+
           if (row.idVoie !== context.currentVoie) {
             handleAdressesVoie(context)
             context.currentVoie = row.idVoie
