@@ -7,7 +7,7 @@ const {createGunzip} = require('gunzip-stream')
 const {parse} = require('ndjson')
 const {beautify} = require('@etalab/adresses-util')
 const mongo = require('../lib/utils/mongo')
-const {getCommune, getCommunes, getDepartement, getCodeDepartementByCodeCommune} = require('../lib/cog')
+const {getCommune, getCommunes} = require('../lib/cog')
 const communesLocaux = require('../communes-locaux.json')
 
 const communesLocauxIndex = keyBy(communesLocaux, 'codeCommune')
@@ -146,41 +146,6 @@ async function finish(context) {
   context.communesMetrics.push(...communesMetrics)
 
   await mongo.db.collection('communes').insertMany(communesMetrics)
-
-  // On calcule désormais les métriques relatives aux départements
-  const departementsMetrics = chain(context.communesMetrics)
-    .groupBy(c => getCodeDepartementByCodeCommune(c.codeCommune))
-    .map((communesMetrics, codeDepartement) => {
-      const communesWithWarnings = communesMetrics.filter(c => {
-        if (c.type === 'empty') {
-          return true
-        }
-
-        const {adressesCount, adressesCountTarget} = c
-
-        if (!adressesCountTarget) {
-          return false
-        }
-
-        if (adressesCount < adressesCountTarget * 0.7 || adressesCount > adressesCountTarget * 1.3) {
-          return true
-        }
-
-        return false
-      })
-
-      const departement = getDepartement(codeDepartement)
-
-      return {
-        codeDepartement,
-        nomDepartement: departement ? departement.nom : undefined,
-        communesCount: communesMetrics.length,
-        communesWithWarnings: communesWithWarnings.length
-      }
-    })
-    .value()
-
-  await mongo.db.collection('departements').insertMany(departementsMetrics)
 }
 
 async function main() {

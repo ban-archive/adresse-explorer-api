@@ -5,11 +5,8 @@ const cors = require('cors')
 const w = require('./lib/utils/wrap')
 const mongo = require('./lib/utils/mongo')
 const db = require('./lib/models')
-const {getCommune} = require('./lib/cog')
-const {buildContoursIndex} = require('./lib/contours')
 
 const app = express()
-const contoursIndexPromise = buildContoursIndex()
 
 function badRequest(res, message) {
   return res.status(400).send({
@@ -28,35 +25,6 @@ function toCleInterop(codeCommuneVoie, codeVoie, numero, suffixe) {
 }
 
 app.use(cors({origin: true}))
-
-app.get('/france', w(async (req, res) => {
-  const metrics = await db.getFranceMetrics()
-  const contoursIndex = await contoursIndexPromise
-  metrics.departements.forEach(d => {
-    if (d.codeDepartement in contoursIndex) {
-      d.contour = contoursIndex[d.codeDepartement]
-    }
-  })
-  res.send(metrics)
-}))
-
-app.get('/departement/:codeDepartement', w(async (req, res) => {
-  const metrics = await db.getDepartementMetrics(req.params.codeDepartement)
-
-  if (!metrics) {
-    return res.sendStatus(404)
-  }
-
-  const contoursIndex = await contoursIndexPromise
-  metrics.communes.forEach(c => {
-    c.nomCommune = getCommune(c.codeCommune).nom
-    if (c.codeCommune in contoursIndex) {
-      c.contour = contoursIndex[c.codeCommune]
-    }
-  })
-
-  res.send(metrics)
-}))
 
 app.get('/:codeCommune', w(async (req, res) => {
   const {codeCommune} = req.params

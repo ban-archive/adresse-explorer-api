@@ -4,7 +4,6 @@ const mongo = require('../lib/utils/mongo')
 
 async function main() {
   await mongo.connect()
-  await mongo.db.collection('departements').createIndex({codeDepartement: 1})
   await mongo.db.collection('communes').createIndex({codeCommune: 1})
   await mongo.db.collection('communes').createIndex({codeDepartement: 1})
   await mongo.db.collection('voies').createIndex({codeCommune: 1})
