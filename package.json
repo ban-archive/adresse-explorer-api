@@ -19,7 +19,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "gunzip-stream": "^1.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mongodb": "^3.4.1",
     "ndjson": "^1.5.0"
   },
